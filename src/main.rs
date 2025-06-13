@@ -2,7 +2,7 @@ mod consts;
 mod clean_input_folder;
 mod ocr_and_return_path;
 mod read_in_document_and_create_prompt;
-
+mod send_prompt_to_llm;
 fn main() {
     // stages of this project:
     // 1) OCR PDF

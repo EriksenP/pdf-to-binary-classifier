@@ -1,11 +1,11 @@
-use std::{fmt::format, fs, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 use crate::consts;
 pub struct Prompt {
-    task: String,
-    language: String,
-    description: String,
-    context: Option<String>,
+    pub task: String,
+    pub language: String,
+    pub description: String,
+    pub context: Option<String>,
 }
 
 pub fn read_in_document_and_create_prompt(document_text: &PathBuf) -> Option<Prompt> {
