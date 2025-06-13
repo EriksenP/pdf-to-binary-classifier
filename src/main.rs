@@ -1,7 +1,7 @@
-use std::{path::PathBuf, process::Command};
 mod consts;
 mod clean_input_folder;
 mod ocr_and_return_path;
+mod read_in_document_and_create_prompt;
 
 fn main() {
     // stages of this project:
@@ -16,6 +16,7 @@ fn main() {
     // Solutions
     // 1) Used ocrmypdf 13.4.0+dfsg to perform the OCR
 
+
     // Step 1:
     // Clean up the input directory, removing spaces in file names.
     // I am doing this because working with spaces in file names is
@@ -26,7 +27,10 @@ fn main() {
     // Get a list of every document in the folder
     // For error checking purposes we will perform OCR and LLM
     // Each document separately rather than doing the operations
-    // in a batch.
+    // in a batch.  This is per Susan so that she can check the outputs.
+    
+    // read in all of the documents in the directory
+    // TODO: don't assume they are all PDFs.
     let documents = std::fs::read_dir(consts::PDF_PATH).unwrap();
     for document in documents {
         // need to think about this error case more.
@@ -45,8 +49,15 @@ fn main() {
             Some(path) => path,
             None => continue,
         };
-        println!("Document text path: {}", document_text_path.to_str().unwrap())
+        println!("Document text path: {}", document_text_path.to_str().unwrap());
+
+        // step 3: Read in the OCRed document and create a prompt for the LLM
+        let prompt = read_in_document_and_create_prompt::read_in_document_and_create_prompt(&document_text_path);
+        
+        // step 4: Send the prompt to the LLM and get a response
+        
     }
+
 }
 
 

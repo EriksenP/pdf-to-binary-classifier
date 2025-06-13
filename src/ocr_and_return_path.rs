@@ -34,15 +34,26 @@ pub fn perform_ocr(pdf_file_path: PathBuf, ocr_output_path: &str) -> Option<Path
 
     output_path.push(filename.replace(".pdf", ".txt"));
     trash_output.push(PDF_OCR_ARG_LAST);
-    println!("Output path: {:?}", output_path);
-    println!("Pdf file path: {:?}", pdf_file_path);
-    println!("Trash path: {:?}", trash_output);
-    let text = Command::new(PDF_OCR_TOOL)
+    // for debugging purposes
+    // println!("Output path: {:?}", output_path);
+    // println!("Pdf file path: {:?}", pdf_file_path);
+    // println!("Trash path: {:?}", trash_output);
+    let command = format!("{} {} {} {} {}",
+        PDF_OCR_TOOL, 
+        PDF_OCR_ARG_1, 
+        output_path.to_str().unwrap(), 
+        pdf_file_path.to_str().unwrap(), 
+        trash_output.to_str().unwrap());
+    
+    // for debugging purposes
+    //println!("Command: {}", command);
+    // This may look wrong, but I tried it by directly issuing the command
+    // and I had some issues, so I made it a debuggable string.
+
+    let text = Command::new("bash")
         .current_dir(PDF_PATH)
-        .arg(PDF_OCR_ARG_1)
-        .arg(ocr_output_path)
-        .arg(pdf_file_path)
-        .arg(trash_output)
+        .arg("-c")
+        .arg(command)
         .output()
         .expect("Failed to execute OCR command");
     println!("Output: {:?}", text);
