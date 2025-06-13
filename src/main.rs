@@ -1,6 +1,8 @@
+use serde_json::{json, Value};
+use regex::Regex;
 use tokio;
 
-use crate::consts::BINARY_CLASSIFIER_OUTPUT_PATH;
+use crate::consts::LLM_OUTPUT_PATH;
 mod clean_input_folder;
 mod consts;
 mod ocr_and_return_path;
@@ -28,11 +30,11 @@ async fn main() {
     // ANNOYING and I saw a bunch of them in the first sample.
     // also create the output file if it doesn't exist.
     clean_input_folder::clean_up_spaces_in_filenames(consts::PDF_PATH);
-    write_out_data::create_file(consts::BINARY_CLASSIFIER_OUTPUT_DIRECTORY)
+    write_out_data::create_file(consts::LLM_OUTPUT_PATH)
         .expect("Failed to create output file");
     write_out_data::append_to_file(
-        consts::BINARY_CLASSIFIER_OUTPUT_DIRECTORY,
-        consts::BINARY_CLASSIFIER_OUTPUT_HEADERS,
+        consts::LLM_OUTPUT_PATH,
+        consts::LLM_OUTPUT_HEADERS,
     )
     .expect("Failed to wrtie headers to output file");
     // Step 2:
@@ -87,10 +89,37 @@ async fn main() {
         }
         let response = response.unwrap();
 
-        // step 5: output to file
-        let filename = document_text_path.file_name().unwrap().to_str().unwrap();
-        let writeable = format!("{},{}\n", filename, response);
-        write_out_data::append_to_file(BINARY_CLASSIFIER_OUTPUT_PATH, &writeable)
-            .expect("Failed to append classfiered to output file");
+        // Getting deepseek to not include its thoughts seems difficult.
+        // I am going to process the text and remove everything but what I want.
+        
+        // get the text of the response
+        let text = response.as_str();
+        // get the values as a json object
+        let full_llm_response: Value = serde_json::from_str(text).unwrap();
+        // get the response value from the text
+        let text = full_llm_response.get("response").unwrap().to_string();
+        // look for the jeson in the response text
+        let json_in_response_pattern = Regex::new(r"\{[^{}]*\}").unwrap();
+        // If we find the json then parse it otherwise fail
+        if let Some(proper) = json_in_response_pattern.find(&text) {
+            let possible = proper.as_str();
+            let json_response:Result<Value, _> = serde_json::from_str(possible);
+            if json_response.is_ok() {
+                let mut json_response = json_response.unwrap();
+                // create the filename
+                let filename = document_text_path.file_name().unwrap().to_str().unwrap();
+                // jam it into the json
+                json_response[filename] = json!(filename);
+                let text = json_response.to_string();
+
+                // step 5: output to file
+                let writeable = format!("{}\n", text);
+                write_out_data::append_to_file(LLM_OUTPUT_PATH, &writeable)
+                    .expect("Failed to append classfiered to output file");
+            }
+        }else {
+            println!("Failed to find json in the response... serious issue");
+            return;
+        }
     }
 }

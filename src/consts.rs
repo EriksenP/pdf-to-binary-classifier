@@ -7,9 +7,24 @@ pub const PDF_PATH: &str = "/home/paul/susan/policeunion/data";
 pub const OCR_OUTPUT_PATH: &str = "/home/paul/susan/policeunion/data/output";
 
 pub const LLM_TO_USE: &str = "deepseek-r1:latest";
-pub const LLM_PROMPT: &str = "Read the text below, generate a summary of the text, and then generate 3 binary classifiers indicating whether the police were mentioned in the text, wether a police union was menioned in the text, and wether the mention of the police or union was positive negative or neutral with respect to the outcome of the event.  Please output the results separated by commas and nothing else.  TEXT STARTS BELOW THIS SENTENCE.";
+pub const LLM_PROMPT: &str = "The following are a set of instructions:
+1) Read the text below the 20 equal signs
+2) Generate a summary of the text, which includes parties involved, nature of the dispute, and the resolution of the dispute.
+3) Create a binary classifier for 3 pieces of information:
+	a) Were the police involved?
+	b) Was one or more police union involved?
+	c) Was the resolution positive or negative for the police?
+4) Structure your response in a json object that follows this structure (including tildes):
+~~~~~
+{
+	summary: string
+	police_involved: bool
+	police_union_involved: bool
+	outcome: positive, negative, neutral, none
+},
 
-pub const BINARY_CLASSIFIER_OUTPUT_HEADERS: &str = "file,police,union,positive";
-pub const BINARY_CLASSIFIER_OUTPUT_DIRECTORY: &str = "/home/paul/susan/policeunion/data/output";
-pub const BINARY_CLASSIFIER_OUTPUT_PATH: &str =
-    "/home/paul/susan/policeunion/data/output/binary_classifiers.csv";
+====================";
+
+pub const LLM_OUTPUT_HEADERS: &str = "";
+pub const LLM_OUTPUT_PATH: &str =
+    "/home/paul/susan/policeunion/data/output/llm_output.json";
