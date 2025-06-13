@@ -1,6 +1,6 @@
 use crate::{consts, read_in_document_and_create_prompt::Prompt};
-use serde_json::json;
 use reqwest::Client;
+use serde_json::json;
 
 pub async fn send_prompt_to_llm(prompt: &Prompt) -> Result<String, Box<dyn std::error::Error>> {
     let prompt_str = format!(

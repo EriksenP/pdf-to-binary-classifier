@@ -1,5 +1,8 @@
-use std::{path::{Path, PathBuf}, process::Command};
 use crate::consts::{OCR_OUTPUT_PATH, PDF_OCR_ARG_1, PDF_OCR_ARG_LAST, PDF_OCR_TOOL, PDF_PATH};
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 pub fn perform_ocr(pdf_file_path: PathBuf, ocr_output_path: &str) -> Option<PathBuf> {
     // make sure you have a place to output to.
@@ -38,13 +41,15 @@ pub fn perform_ocr(pdf_file_path: PathBuf, ocr_output_path: &str) -> Option<Path
     // println!("Output path: {:?}", output_path);
     // println!("Pdf file path: {:?}", pdf_file_path);
     // println!("Trash path: {:?}", trash_output);
-    let command = format!("{} {} {} {} {}",
-        PDF_OCR_TOOL, 
-        PDF_OCR_ARG_1, 
-        output_path.to_str().unwrap(), 
-        pdf_file_path.to_str().unwrap(), 
-        trash_output.to_str().unwrap());
-    
+    let command = format!(
+        "{} {} {} {} {}",
+        PDF_OCR_TOOL,
+        PDF_OCR_ARG_1,
+        output_path.to_str().unwrap(),
+        pdf_file_path.to_str().unwrap(),
+        trash_output.to_str().unwrap()
+    );
+
     // for debugging purposes
     //println!("Command: {}", command);
     // This may look wrong, but I tried it by directly issuing the command

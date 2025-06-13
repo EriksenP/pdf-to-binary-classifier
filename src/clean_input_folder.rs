@@ -1,5 +1,5 @@
+use crate::consts::{BASH_PDF_FOLDER_CLEANUP, PDF_PATH};
 use std::process::Command;
-use crate::consts::{PDF_PATH, BASH_PDF_FOLDER_CLEANUP};
 
 pub fn clean_up_spaces_in_filenames(pdf_directory: &str) {
     // Step 1:
@@ -23,4 +23,4 @@ pub fn clean_up_spaces_in_filenames(pdf_directory: &str) {
         .current_dir(pdf_directory)
         .output()
         .expect("Failed to execute bash script");
-} 
+}
