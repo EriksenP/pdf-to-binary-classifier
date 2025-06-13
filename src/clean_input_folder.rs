@@ -2,6 +2,7 @@ use crate::consts::{BASH_PDF_FOLDER_CLEANUP, PDF_PATH};
 use std::process::Command;
 
 pub fn clean_up_spaces_in_filenames(pdf_directory: &str) {
+    println!("clean up step");
     // Step 1:
     // Clean up the input directory, removing spaces in file names.
     // I am doing this because working with spaces in file names is

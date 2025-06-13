@@ -9,6 +9,7 @@ pub struct Prompt {
 }
 
 pub fn read_in_document_and_create_prompt(document_text: &PathBuf) -> Option<Prompt> {
+    println!("Read in and create prompt step");
     let contents = fs::read_to_string(document_text);
     if contents.is_err() {
         eprintln!(

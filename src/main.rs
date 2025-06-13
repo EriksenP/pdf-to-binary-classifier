@@ -110,7 +110,8 @@ async fn main() {
             let temp = clean_str(possible);
             let possible = &temp.as_str();
 
-            println!("cleaned json: {}", possible);
+            // println!("cleaned json: {}", possible);
+
             let json_response:Result<Value, _> = serde_json::from_str(possible);
             if json_response.is_ok() {
                 let mut json_response = json_response.unwrap();
@@ -120,7 +121,8 @@ async fn main() {
                 // jam it into the json
                 json_response["filename"] = json!(filename);
                 let text = json_response.to_string();
-                println!("final text: {}", text);
+                
+                // println!("final text: {}", text);
                 // step 5: output to file
                 let writeable = format!("{}\n", text);
                 write_out_data::append_to_file(LLM_OUTPUT_PATH, &writeable)

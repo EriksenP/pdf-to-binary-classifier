@@ -1,10 +1,11 @@
-use crate::consts::{OCR_OUTPUT_PATH, PDF_OCR_ARG_1, PDF_OCR_ARG_LAST, PDF_OCR_TOOL, PDF_PATH};
+use crate::consts::{OCR_OUTPUT_PATH, PDF_OCR_ARG_1, PDF_OCR_ARG_LAST, PDF_OCR_JOB_ARGS, PDF_OCR_TOOL, PDF_PATH};
 use std::{
     path::{Path, PathBuf},
     process::Command,
 };
 
 pub fn perform_ocr(pdf_file_path: PathBuf, ocr_output_path: &str) -> Option<PathBuf> {
+    println!("perform ocr step");
     // make sure you have a place to output to.
     verify_output_path_exists_or_create_or_fail();
     // perform the OCR and return the path to the document
@@ -42,8 +43,9 @@ pub fn perform_ocr(pdf_file_path: PathBuf, ocr_output_path: &str) -> Option<Path
     // println!("Pdf file path: {:?}", pdf_file_path);
     // println!("Trash path: {:?}", trash_output);
     let command = format!(
-        "{} {} {} {} {}",
+        "{} {} {} {} {} {}",
         PDF_OCR_TOOL,
+        PDF_OCR_JOB_ARGS,
         PDF_OCR_ARG_1,
         output_path.to_str().unwrap(),
         pdf_file_path.to_str().unwrap(),

@@ -3,6 +3,7 @@ use reqwest::Client;
 use serde_json::json;
 
 pub async fn send_prompt_to_llm(prompt: &Prompt) -> Result<String, Box<dyn std::error::Error>> {
+    println!("Sending prompt to LLM step");
     let prompt_str = format!(
         "Task: {}\nLanguage: {}\nDescription: {}\nContext: {}",
         prompt.task,
