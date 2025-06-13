@@ -1,9 +1,12 @@
+use tokio;
 mod consts;
 mod clean_input_folder;
 mod ocr_and_return_path;
 mod read_in_document_and_create_prompt;
 mod send_prompt_to_llm;
-fn main() {
+
+#[tokio::main(flavor = "current_thread")]
+async fn main() {
     // stages of this project:
     // 1) OCR PDF
     //  a) Do this via a library
@@ -53,9 +56,21 @@ fn main() {
 
         // step 3: Read in the OCRed document and create a prompt for the LLM
         let prompt = read_in_document_and_create_prompt::read_in_document_and_create_prompt(&document_text_path);
-        
+        if prompt.is_none() {
+            eprintln!("Error creating prompt for document: {}", document_text_path.to_str().unwrap());
+            continue;
+        }
+        let prompt = prompt.unwrap();
+
         // step 4: Send the prompt to the LLM and get a response
-        
+        let response = send_prompt_to_llm::send_prompt_to_llm(&prompt).await;
+        if response.is_err() {
+            eprintln!("Error sending prompt to LLM: {}", response.err().unwrap());
+            continue;
+        }
+        let response = response.unwrap();
+        // step 5: output to file
+
     }
 
 }

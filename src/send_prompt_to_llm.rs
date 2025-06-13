@@ -1,4 +1,4 @@
-use crate::read_in_document_and_create_prompt::Prompt;
+use crate::{consts, read_in_document_and_create_prompt::Prompt};
 use serde_json::json;
 use reqwest::Client;
 
@@ -12,7 +12,7 @@ pub async fn send_prompt_to_llm(prompt: &Prompt) -> Result<String, Box<dyn std::
     );
 
     let body = json!({
-        "model": "deepseek-r1:latest",
+        "model": consts::LLM_TO_USE,
         "prompt": prompt_str,
         "stream": false
     });
