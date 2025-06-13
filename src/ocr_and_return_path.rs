@@ -55,13 +55,13 @@ pub fn perform_ocr(pdf_file_path: PathBuf, ocr_output_path: &str) -> Option<Path
     // This may look wrong, but I tried it by directly issuing the command
     // and I had some issues, so I made it a debuggable string.
 
-    let text = Command::new("bash")
+    Command::new("bash")
         .current_dir(PDF_PATH)
         .arg("-c")
         .arg(command)
         .output()
         .expect("Failed to execute OCR command");
-    println!("Output: {:?}", text);
+    // println!("OCR output: {:?}", text);
     return Option::Some(output_path);
 }
 

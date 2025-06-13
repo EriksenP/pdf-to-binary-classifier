@@ -14,14 +14,12 @@ pub const LLM_PROMPT: &str = "The following are a set of instructions:
 	a) Were the police involved?
 	b) Was one or more police union involved?
 	c) Was the resolution positive or negative for the police?
-4) Structure your response in a json object that follows this structure (including tildes):
-~~~~~
-{
-	summary: string
-	police_involved: bool
-	police_union_involved: bool
-	outcome: positive, negative, neutral, none
-},
+4) Structure your response in a valid json object that has the following structure:
+
+summary: string
+police_involved: bool
+police_union_involved: bool
+outcome: positive, negative, neutral, none
 
 ====================";
 

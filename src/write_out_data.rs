@@ -14,6 +14,11 @@ pub fn create_file(filename: &str) -> io::Result<()> {
 }
 
 pub fn append_to_file(filename: &str, data: &str) -> io::Result<()> {
+    println!("Appending data to file: {}", data);
     let mut file = fs::OpenOptions::new().append(true).open(filename)?;
-    file.write_all(data.as_bytes())
+    let w = file.write_all(data.as_bytes());
+    if w.is_ok() {
+        file.flush().expect("Failed to flush the buffer");
+    }
+    w
 }

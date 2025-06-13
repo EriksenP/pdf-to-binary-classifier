@@ -25,6 +25,6 @@ pub async fn send_prompt_to_llm(prompt: &Prompt) -> Result<String, Box<dyn std::
         .await?;
 
     let text = res.text().await?;
-    println!("Response: {}", text);
+    // println!("Response: {}", text);
     Ok(text)
 }

@@ -1,3 +1,5 @@
+use std::process;
+
 use serde_json::{json, Value};
 use regex::Regex;
 use tokio;
@@ -103,23 +105,43 @@ async fn main() {
         // If we find the json then parse it otherwise fail
         if let Some(proper) = json_in_response_pattern.find(&text) {
             let possible = proper.as_str();
+            // this is annoying but the parser is REALLY specific.  Have to clean up
+            // all the formatting and escape chars before parsing it.
+            let temp = clean_str(possible);
+            let possible = &temp.as_str();
+
+            println!("cleaned json: {}", possible);
             let json_response:Result<Value, _> = serde_json::from_str(possible);
             if json_response.is_ok() {
                 let mut json_response = json_response.unwrap();
+                println!("Created json response: {}", json_response);
                 // create the filename
                 let filename = document_text_path.file_name().unwrap().to_str().unwrap();
                 // jam it into the json
-                json_response[filename] = json!(filename);
+                json_response["filename"] = json!(filename);
                 let text = json_response.to_string();
-
+                println!("final text: {}", text);
                 // step 5: output to file
                 let writeable = format!("{}\n", text);
                 write_out_data::append_to_file(LLM_OUTPUT_PATH, &writeable)
                     .expect("Failed to append classfiered to output file");
+            } else {
+                println!("Json response was not okay!");
+                println!("error: {}", json_response.err().unwrap());
             }
         }else {
             println!("Failed to find json in the response... serious issue");
-            return;
+            process::exit(-1); 
         }
     }
+}
+
+fn clean_str(input: &str) -> String {
+    input.replace("\\n", "")
+        .replace("\\t", "")
+         .replace("\\r", "")
+        .replace("\n", "")
+         .replace("\t", "")
+         .replace("\r", "")
+         .replace("\\","")
 }
