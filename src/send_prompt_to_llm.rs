@@ -1,20 +1,14 @@
-use crate::{consts, read_in_document_and_create_prompt::Prompt};
+use crate::{consts};
 use reqwest::Client;
 use serde_json::json;
 
-pub async fn send_prompt_to_llm(prompt: &Prompt) -> Result<String, Box<dyn std::error::Error>> {
+pub async fn send_prompt_to_llm(prompt: &str) -> Result<String, Box<dyn std::error::Error>> {
     println!("Sending prompt to LLM step");
-    let prompt_str = format!(
-        "Task: {}\nLanguage: {}\nDescription: {}\nContext: {}",
-        prompt.task,
-        prompt.language,
-        prompt.description,
-        prompt.context.clone().unwrap_or_default()
-    );
 
     let body = json!({
         "model": consts::LLM_TO_USE,
-        "prompt": prompt_str,
+        "prompt": prompt,
+        "think": false,
         "stream": false
     });
 

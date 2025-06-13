@@ -34,11 +34,6 @@ async fn main() {
     clean_input_folder::clean_up_spaces_in_filenames(consts::PDF_PATH);
     write_out_data::create_file(consts::LLM_OUTPUT_PATH)
         .expect("Failed to create output file");
-    write_out_data::append_to_file(
-        consts::LLM_OUTPUT_PATH,
-        consts::LLM_OUTPUT_HEADERS,
-    )
-    .expect("Failed to wrtie headers to output file");
     // Step 2:
     // Get a list of every document in the folder
     // For error checking purposes we will perform OCR and LLM
@@ -95,12 +90,12 @@ async fn main() {
         // I am going to process the text and remove everything but what I want.
         
         // get the text of the response
-        let text = response.as_str();
+        let text_original = response.as_str();
         // get the values as a json object
-        let full_llm_response: Value = serde_json::from_str(text).unwrap();
+        let full_llm_response: Value = serde_json::from_str(text_original).unwrap();
         // get the response value from the text
         let text = full_llm_response.get("response").unwrap().to_string();
-        // look for the jeson in the response text
+        // look for the json in the response text
         let json_in_response_pattern = Regex::new(r"\{[^{}]*\}").unwrap();
         // If we find the json then parse it otherwise fail
         if let Some(proper) = json_in_response_pattern.find(&text) {
@@ -131,7 +126,9 @@ async fn main() {
                 println!("Json response was not okay!");
                 println!("error: {}", json_response.err().unwrap());
             }
-        }else {
+        } else {
+            println!("Prompt: {prompt}");
+            println!("Message from LLM: {}", text_original);
             println!("Failed to find json in the response... serious issue");
             process::exit(-1); 
         }
