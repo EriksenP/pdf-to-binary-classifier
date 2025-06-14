@@ -1,16 +1,16 @@
 use std::process;
 
-use serde_json::{json, Value};
 use regex::Regex;
+use serde_json::{Value, json};
 use tokio;
 
 use crate::consts::LLM_OUTPUT_PATH;
 mod clean_input_folder;
 mod consts;
+mod file_io;
 mod ocr_and_return_path;
 mod read_in_document_and_create_prompt;
 mod send_prompt_to_llm;
-mod file_io;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -32,9 +32,10 @@ async fn main() {
     // ANNOYING and I saw a bunch of them in the first sample.
     // also create the output file if it doesn't exist.
     clean_input_folder::clean_up_spaces_in_filenames(consts::PDF_PATH);
-    
-    file_io::create_file(consts::LLM_OUTPUT_PATH)
+
+    let processed = file_io::create_file_or_get_current_position(consts::LLM_OUTPUT_PATH)
         .expect("Failed to create output file");
+
     // Step 2:
     // Get a list of every document in the folder
     // For error checking purposes we will perform OCR and LLM
@@ -56,6 +57,14 @@ async fn main() {
         }
         let document = document.unwrap();
         let path = document.path();
+
+        // check that we haven't already processed the file
+        // we will let these fail if they don't find a path
+        let filename = path.file_name().unwrap().to_str().unwrap();
+        if processed.completed.contains(filename) {
+            continue;
+        }
+
         let document_text_path = ocr_and_return_path::perform_ocr(path, consts::OCR_OUTPUT_PATH);
         let document_text_path = match document_text_path {
             Some(path) => path,
@@ -89,7 +98,7 @@ async fn main() {
 
         // Getting deepseek to not include its thoughts seems difficult.
         // I am going to process the text and remove everything but what I want.
-        
+
         // get the text of the response
         let text_original = response.as_str();
         // get the values as a json object
@@ -108,7 +117,7 @@ async fn main() {
 
             // println!("cleaned json: {}", possible);
 
-            let json_response:Result<Value, _> = serde_json::from_str(possible);
+            let json_response: Result<Value, _> = serde_json::from_str(possible);
             if json_response.is_ok() {
                 let mut json_response = json_response.unwrap();
                 println!("Created json response: {}", json_response);
@@ -117,7 +126,7 @@ async fn main() {
                 // jam it into the json
                 json_response["filename"] = json!(filename);
                 let text = json_response.to_string();
-                
+
                 // println!("final text: {}", text);
                 // step 5: output to file
                 let writeable = format!("{}\n", text);
@@ -131,17 +140,18 @@ async fn main() {
             println!("Prompt: {prompt}");
             println!("Message from LLM: {}", text_original);
             println!("Failed to find json in the response... serious issue");
-            process::exit(-1); 
+            process::exit(-1);
         }
     }
 }
 
 fn clean_str(input: &str) -> String {
-    input.replace("\\n", "")
+    input
+        .replace("\\n", "")
         .replace("\\t", "")
-         .replace("\\r", "")
+        .replace("\\r", "")
         .replace("\n", "")
-         .replace("\t", "")
-         .replace("\r", "")
-         .replace("\\","")
+        .replace("\t", "")
+        .replace("\r", "")
+        .replace("\\", "")
 }

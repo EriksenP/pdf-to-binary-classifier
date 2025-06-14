@@ -1,4 +1,4 @@
-use crate::{consts};
+use crate::consts;
 use reqwest::Client;
 use serde_json::json;
 

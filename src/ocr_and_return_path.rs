@@ -1,4 +1,6 @@
-use crate::consts::{OCR_OUTPUT_PATH, PDF_OCR_ARG_1, PDF_OCR_ARG_LAST, PDF_OCR_JOB_ARGS, PDF_OCR_TOOL, PDF_PATH};
+use crate::consts::{
+    OCR_OUTPUT_PATH, PDF_OCR_ARG_1, PDF_OCR_ARG_LAST, PDF_OCR_JOB_ARGS, PDF_OCR_TOOL, PDF_PATH,
+};
 use std::{
     path::{Path, PathBuf},
     process::Command,

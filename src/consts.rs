@@ -29,6 +29,4 @@ BEGIN INSTRUCTIONS
 END INSTRUCTIONS
 ";
 
-pub const LLM_OUTPUT_HEADERS: &str = "";
-pub const LLM_OUTPUT_PATH: &str =
-    "/home/paul/susan/policeunion/data/output/llm_output.json";
+pub const LLM_OUTPUT_PATH: &str = "/home/paul/susan/policeunion/data/output/llm_output.json";

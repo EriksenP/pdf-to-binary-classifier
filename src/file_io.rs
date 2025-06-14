@@ -1,11 +1,13 @@
 use std::{
-    collections::HashSet, fs, io::{self, BufRead, Write}, path::Path
+    collections::HashSet,
+    fs,
+    io::{self, BufRead, Write},
+    path::Path,
 };
 
 use serde_json::Value;
 
-
-struct Checkpoint {
+pub struct Checkpoint {
     pub completed: HashSet<String>,
     // TODO: check what we already OCRed.
     // this is pretty fast so I won't waste time
@@ -19,7 +21,7 @@ impl Checkpoint {
         }
     }
 
-    pub fn create (completed: HashSet<String>) -> Self {
+    pub fn create(completed: HashSet<String>) -> Self {
         Self { completed }
     }
 }
@@ -27,7 +29,7 @@ impl Checkpoint {
 // the following two functions read in the lines that we have completed
 // and creates a set of completed files.
 pub fn parse_input_line_from_outputter(line: &str) -> String {
-    let obj:Result<Value, _> = serde_json::from_str(line);
+    let obj: Result<Value, _> = serde_json::from_str(line);
     match obj {
         Ok(json) => json["filename"].as_str().unwrap().to_string(),
         Err(_) => "".to_string(), // do not care about returning a black string here.
@@ -44,15 +46,15 @@ fn check_previous_run_in_output_file(filename: &str) -> Result<HashSet<String>, 
                 lines.insert(parse_input_line_from_outputter(line.as_str()));
                 // this looks ugly...
                 ()
-            },
-            Err(_) => return Err(io::Error::new(io::ErrorKind::Other, "Failed to read line"))
+            }
+            Err(_) => return Err(io::Error::new(io::ErrorKind::Other, "Failed to read line")),
         }
     }
 
     Ok(lines)
 }
 
-pub fn create_file_or_get_current_position(filename: &str) -> Result<Checkpoint, io::Error>{
+pub fn create_file_or_get_current_position(filename: &str) -> Result<Checkpoint, io::Error> {
     if fs::metadata(Path::new(filename)).is_ok() {
         // file exists
         // read the file and figure out how many entries and which have been processed
