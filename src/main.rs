@@ -10,7 +10,7 @@ mod consts;
 mod ocr_and_return_path;
 mod read_in_document_and_create_prompt;
 mod send_prompt_to_llm;
-mod write_out_data;
+mod file_io;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -32,7 +32,8 @@ async fn main() {
     // ANNOYING and I saw a bunch of them in the first sample.
     // also create the output file if it doesn't exist.
     clean_input_folder::clean_up_spaces_in_filenames(consts::PDF_PATH);
-    write_out_data::create_file(consts::LLM_OUTPUT_PATH)
+    
+    file_io::create_file(consts::LLM_OUTPUT_PATH)
         .expect("Failed to create output file");
     // Step 2:
     // Get a list of every document in the folder
@@ -120,7 +121,7 @@ async fn main() {
                 // println!("final text: {}", text);
                 // step 5: output to file
                 let writeable = format!("{}\n", text);
-                write_out_data::append_to_file(LLM_OUTPUT_PATH, &writeable)
+                file_io::append_to_file(LLM_OUTPUT_PATH, &writeable)
                     .expect("Failed to append classfiered to output file");
             } else {
                 println!("Json response was not okay!");
